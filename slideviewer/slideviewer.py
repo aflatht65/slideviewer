@@ -1,4 +1,4 @@
-""" Google Document XBlock implementation """
+""" Slideviewer XBlock implementation """
 # -*- coding: utf-8 -*-
 #
 
@@ -18,13 +18,8 @@ from xblockutils.resources import ResourceLoader
 LOG = logging.getLogger(__name__)
 RESOURCE_LOADER = ResourceLoader(__name__)
 
-# Constants ###########################################################
-#DEFAULT_DOCUMENT_URL = (
-#    'https://docs.google.com/presentation/d/1x2ZuzqHsMoh1epK8VsGAlanSo7r9z55ualwQlj-ofBQ/embed?'
-#    'start=true&loop=true&delayms=10000'
-#)
 DEFAULT_DOCUMENT_URL = (
-    '//www.slideshare.net/slideshow/embed_code/key/riK0ZKTSRpJtpA'
+    '//www.slideshare.net/slideshow/embed_code/key/vEXgh59LjFJHQV'
 )
 DEFAULT_EMBED_CODE = textwrap.dedent("""
     <iframe
@@ -37,8 +32,8 @@ DEFAULT_EMBED_CODE = textwrap.dedent("""
         webkitallowfullscreen="true">
     </iframe>
 """) .format(DEFAULT_DOCUMENT_URL)
-DOCUMENT_TEMPLATE = "/templates/html/google_docs.html"
-DOCUMENT_EDIT_TEMPLATE = "/templates/html/google_docs_edit.html"
+DOCUMENT_TEMPLATE = "/templates/html/slideviewer_docs.html"
+DOCUMENT_EDIT_TEMPLATE = "/templates/html/slideviewer_docs_edit.html"
 
 
 # Classes ###########################################################
@@ -50,14 +45,12 @@ class SlideviewerXBlock(XBlock, PublishEventMixin):  # pylint: disable=too-many-
         display_name="Display Name",
         help="This name appears in the horizontal navigation at the top of the page.",
         scope=Scope.settings,
-        default="Slideshare"
+        default="Slideviewer"
     )
     embed_code = String(
         display_name="Embed Code",
         help=(
-            "Google provides an embed code for Drive documents. In the Google Drive document, "
-            "from the File menu, select Publish to the Web. Modify settings as needed, click "
-            "Publish, and copy the embed code into this field."
+            "Slideshare provides an embed code for presentations. In the Slideshare presentation click on the 'Embed this presentation' icon and copy the embed code into this field."
         ),
         scope=Scope.settings,
         default=DEFAULT_EMBED_CODE
@@ -90,8 +83,8 @@ class SlideviewerXBlock(XBlock, PublishEventMixin):  # pylint: disable=too-many-
 
         matches = re.search('src="([^"]+)"', self.embed_code)
         fragment.add_content(RESOURCE_LOADER.render_template(DOCUMENT_TEMPLATE, {"self": self, 'iframe_link': matches.group(1)}))
-        fragment.add_css(RESOURCE_LOADER.load_unicode('public/css/google_docs.css'))
-        fragment.add_javascript(RESOURCE_LOADER.load_unicode('public/js/google_docs.js'))
+        fragment.add_css(RESOURCE_LOADER.load_unicode('public/css/slideviewer_docs.css'))
+        fragment.add_javascript(RESOURCE_LOADER.load_unicode('public/js/slideviewer_docs.js'))
 
         fragment.initialize_js('GoogleDocumentBlock')
 
@@ -108,8 +101,8 @@ class SlideviewerXBlock(XBlock, PublishEventMixin):  # pylint: disable=too-many-
             'self': self,
             'defaultName': self.fields['display_name']._default  # pylint: disable=protected-access
         }))
-        fragment.add_javascript(RESOURCE_LOADER.load_unicode('public/js/google_docs_edit.js'))
-        fragment.add_css(RESOURCE_LOADER.load_unicode('public/css/google_edit.css'))
+        fragment.add_javascript(RESOURCE_LOADER.load_unicode('public/js/slideviewer_docs_edit.js'))
+        fragment.add_css(RESOURCE_LOADER.load_unicode('public/css/slideviewer_edit.css'))
 
         fragment.initialize_js('GoogleDocumentEditBlock')
 
@@ -174,4 +167,4 @@ class SlideviewerXBlock(XBlock, PublishEventMixin):  # pylint: disable=too-many-
         """
         A canned scenario for display in the workbench.
         """
-        return [("Slideshare scenario", "<slideviewer/>")]
+        return [("Slideviewer scenario", "<slideviewer/>")]
